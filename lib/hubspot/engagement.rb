@@ -10,6 +10,7 @@ module Hubspot
     CREATE_ENGAGMEMENT_PATH = '/engagements/v1/engagements'
     ENGAGEMENT_PATH = '/engagements/v1/engagements/:engagement_id'
     GET_ASSOCIATED_ENGAGEMENTS = '/engagements/v1/engagements/associated/:objectType/:objectId/paged'
+    GET_ALL_ENGAGEMENT_PATH = '/engagements/v1/engagements/paged'
 
     attr_reader :id
     attr_reader :engagement
@@ -67,6 +68,16 @@ module Hubspot
           raise e unless e.message =~ /not found/
         end
         engagements
+      end
+
+      def all(offset = 0, limit = 20)
+        params = { limit: limit, offset: offset}
+        response = Hubspot::Connection.get_json(GET_ALL_ENGAGEMENT_PATH, params)
+        response['results'] = response['results'].try(:map) { |engagement| new(engagement) }
+        response
+        rescue Hubspot::RequestError => ex
+          return nil if ex.response.code == 404
+          raise ex
       end
     end
 
