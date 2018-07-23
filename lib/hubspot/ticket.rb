@@ -4,7 +4,8 @@ module Hubspot
   #
   class Ticket
     TICKETS_PATH = "/crm-objects/v1/objects/tickets/paged"
-    #TICKET_PATH = "/blogs/v3/topics/:topic_id"
+    TICKET_PATH =  "/crm-objects/v1/objects/tickets/:id"
+    CREATE_TICKET_PATH = "/crm-objects/v1/objects/tickets"
 
     class << self
       # Lists the tickets
@@ -15,13 +16,18 @@ module Hubspot
         response['objects'].map { |t| new(t) }
       end
 
-      # Finds the details for a specific topic_id
-      # {https://developers.hubspot.com/docs/methods/blogv2/get_topics_topic_id }
-      # @return Hubspot::Topic
-      # def find_by_topic_id(id)
-      #   response = Hubspot::Connection.get_json(TOPIC_PATH, { topic_id: id })
-      #   new(response)
-      # end
+      # Finds the details for a specific ticket
+      # {https://developers.hubspot.com/docs/methods/tickets/get_ticket_by_id }
+      # @return Hubspot::Ticket
+      def find_by_ticket_id(id)
+        response = Hubspot::Connection.get_json(TICKET_PATH, { id: id })
+        new(response)
+      end
+
+      def create!(params)
+        response = Hubspot::Connection.post_json(CREATE_TICKET_PATH, params: {}, body: [params] )
+        new(HashWithIndifferentAccess.new(response))
+      end
     end
 
     attr_reader :properties
