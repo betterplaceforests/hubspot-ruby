@@ -35,9 +35,5 @@ module Hubspot
     def initialize(response_hash)
       @properties = response_hash #no need to parse anything, we have properties
     end
-
-    def [](property)
-      @properties[property]
-    end
   end
 end
