@@ -70,7 +70,9 @@ module Hubspot
       # @param offset [Integer] pages back through recent contacts.
       def paged(opts = {})
         response = Hubspot::Connection.get_json(ALL_DEALS_PATH, opts.merge("includeAssociations" => true))
-        deals = response["deals"].map { |d| new(d) }
+        response["deals"].map! { |d| new(d) }
+
+        response
       end
       
       # Find all deals associated to a company
