@@ -10,6 +10,7 @@ module Hubspot
     CREATE_DEAL_PATH = "/deals/v1/deal"
     DEAL_PATH = "/deals/v1/deal/:deal_id"
     RECENT_UPDATED_PATH = "/deals/v1/deal/recent/modified"
+    ALL_DEALS_PATH = "/deals/v1/deal/paged"
     UPDATE_DEAL_PATH = '/deals/v1/deal/:deal_id'
     ASSOCIATE_DEAL_PATH = '/deals/v1/deal/:deal_id/associations/:OBJECTTYPE?id=:objectId'
     ASSOCIATED_DEAL_PATH = "/deals/v1/deal/associated/:objectType/:objectId"
@@ -61,6 +62,15 @@ module Hubspot
       def recent(opts = {})
         response = Hubspot::Connection.get_json(RECENT_UPDATED_PATH, opts)
         response['results'].map { |d| new(d) }
+      end
+
+      # Find all deals.
+      # {https://developers.hubspot.com/docs/methods/deals/get-all-deals}
+      # @param limit [Integer] the amount of deals to return.
+      # @param offset [Integer] pages back through recent contacts.
+      def paged(opts = {})
+        response = Hubspot::Connection.get_json(ALL_DEALS_PATH, opts.merge("includeAssociations" => true))
+        deals = response["deals"].map { |d| new(d) }
       end
       
       # Find all deals associated to a company
